@@ -6,4 +6,4 @@ COPY tango_delta.py .
 
 RUN apt-get update && pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "tango_delta.py" ]
+CMD [ "python3", "tango_delta.py" ]
