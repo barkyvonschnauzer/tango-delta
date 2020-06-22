@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 
@@ -234,14 +235,17 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
     output_filename_all      = "Attack_URL_List_ALL_" + (date_str.replace(':','-')).replace(' ','_')
     output_filename_tango    = "Attack_URL_List_TANGO_" + (date_str.replace(':','-')).replace(' ','_')
     output_filename_netcraft = "Attack_URL_List_NETCRAFT_" + (date_str.replace(':','-')).replace(' ','_')
+    delta_filename_csv       = "TANGO_Current_Delta.csv" 
     
     output_filepath_all      = Path('/output') / output_filename_all
     output_filepath_tango    = Path('/output') / output_filename_tango
     output_filepath_netcraft = Path('/output') / output_filename_netcraft
+    delta_filepath_csv       = Path('/output') / delta_filename_all_csv
 
     print (output_filepath_all)
     print (output_filepath_tango)
     print (output_filepath_netcraft)
+    print (output_filepath_all_csv)
 
     print ('Write ALL:')
     with open(output_filepath_all, 'w') as all_output_fh:
@@ -260,6 +264,13 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
         for url in set(netcraft_results):
             print (url)
             netcraft_output_fh.write('%s\n' % url)
+
+    print ('Write DELTA to CSV:')
+    with open(delta_filepath_csv, mode='w') as delta_csv_output_file:
+        delta_output_csv_writer = csv.writer(delta_csv_output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for url in set(all_results):
+            print (url)
+            delta_output_csv_writer.write_row(url)
 
 if __name__ == "__main__":
     main()
