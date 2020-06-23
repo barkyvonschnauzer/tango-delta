@@ -240,12 +240,12 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
     output_filepath_all      = Path('/output') / output_filename_all
     output_filepath_tango    = Path('/output') / output_filename_tango
     output_filepath_netcraft = Path('/output') / output_filename_netcraft
-    delta_filepath_csv       = Path('/output') / delta_filename_all_csv
+    delta_filepath_csv       = Path('/output') / delta_filename_csv
 
     print (output_filepath_all)
     print (output_filepath_tango)
     print (output_filepath_netcraft)
-    print (output_filepath_all_csv)
+    print (delta_filepath_csv)
 
     print ('Write ALL:')
     with open(output_filepath_all, 'w') as all_output_fh:
@@ -265,12 +265,21 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
             print (url)
             netcraft_output_fh.write('%s\n' % url)
 
+    # delete delta file if it exists
+    if os.path.exists(delta_filepath_csv):
+        print ("Deleting TANGO_Current_Delta.csv")
+        os.remove(delta_filepath_csv)
+    else:
+        print ("TANGO_Current_Delta.csv does not exist")
+
     print ('Write DELTA to CSV:')
-    with open(delta_filepath_csv, mode='w') as delta_csv_output_file:
+
+    # Now write to it
+    open(delta_filepath_csv, 'w').close()
+
+    with open(delta_filepath_csv, 'w') as delta_csv_output_file:
         delta_output_csv_writer = csv.writer(delta_csv_output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for url in set(all_results):
-            print (url)
-            delta_output_csv_writer.write_row(url)
+        delta_output_csv_writer.writerow(all_results)
 
 if __name__ == "__main__":
     main()
