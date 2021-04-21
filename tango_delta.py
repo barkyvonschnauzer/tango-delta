@@ -236,16 +236,19 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
     output_filename_tango    = "Attack_URL_List_TANGO_" + (date_str.replace(':','-')).replace(' ','_')
     output_filename_netcraft = "Attack_URL_List_NETCRAFT_" + (date_str.replace(':','-')).replace(' ','_')
     delta_filename_csv       = "TANGO_Current_Delta.csv" 
-    
+    delta_filename_list      = "TANGO_Current_Delta_List"   
+ 
     output_filepath_all      = Path('/output') / output_filename_all
     output_filepath_tango    = Path('/output') / output_filename_tango
     output_filepath_netcraft = Path('/output') / output_filename_netcraft
     delta_filepath_csv       = Path('/output') / delta_filename_csv
+    delta_filepath_list      = Path('/output') / delta_filename_list
 
     print (output_filepath_all)
     print (output_filepath_tango)
     print (output_filepath_netcraft)
     print (delta_filepath_csv)
+    print (delta_filepath_list)
 
     print ('Write ALL:')
     with open(output_filepath_all, 'w') as all_output_fh:
@@ -272,14 +275,32 @@ def write_attack_urls_to_output(all_results, tango_results, netcraft_results, da
     else:
         print ("TANGO_Current_Delta.csv does not exist")
 
-    print ('Write DELTA to CSV:')
+    # delete delta file if it exists
+    if os.path.exists(delta_filepath_list):
+        print ("Deleting TANGO_Current_Delta_List")
+        os.remove(delta_filepath_list)
+    else:
+        print ("TANGO_Current_Delta_List does not exist")
 
-    # Now write to it
+    print ('Write DELTA to CSV')
+
+    # Now write to csv
     open(delta_filepath_csv, 'w').close()
 
     with open(delta_filepath_csv, 'w') as delta_csv_output_file:
         delta_output_csv_writer = csv.writer(delta_csv_output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         delta_output_csv_writer.writerow(all_results)
+
+    print ('Write DELTA to LIST')
+
+    # Now write list
+    open(delta_filepath_list, 'w').close()
+
+    with open(delta_filepath_list, 'w') as delta_list_output_fh:
+        for url in set(all_results):
+            print (url)
+            delta_list_output_fh.write('%s\n' % url)
+
 
 if __name__ == "__main__":
     main()
